@@ -70,6 +70,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: aorjoa/pun-infra
+          persist-credentials: falseadd
           fetch-depth: 0
       - name: change image tag
         run: |

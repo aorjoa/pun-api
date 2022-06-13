@@ -83,6 +83,6 @@ jobs:
       - name: push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.psu }}
+          github_token: ${{ secrets.PAT }}
           repository: aorjoa/pun-infra
           branch: main

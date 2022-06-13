@@ -63,7 +63,7 @@ jobs:
 #        run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=ghcr.io/aorjoa/pun-api:latest '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
 
   gitop-version:
-    needs: build-native
+#    needs: build-native
     runs-on: ubuntu-latest
     steps:
       - name: checkout

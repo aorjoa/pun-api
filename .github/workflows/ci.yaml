@@ -10,57 +10,57 @@ permissions:
   packages: write
 
 jobs:
-  test-native:
-    runs-on: ubuntu-latest
-    env:
-      MVN: mvn --show-version --batch-mode
-    steps:
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: 22.1.0
-          java-version: 17
-          components: native-image
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: cache ~/.m2
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: verify native image
-        run: $MVN clean verify -Pnative
-
-  build-native:
-    needs: test-native
-    runs-on: ubuntu-latest
-    env:
-      MVN: mvn --show-version --batch-mode
-    steps:
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: 22.1.0
-          java-version: 17
-          components: native-image
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: login ghcr.io
-        uses: docker/login-action@v1.8.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          logout: true
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: cache ~/.m2
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: package native image
-        run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=ghcr.io/aorjoa/pun-api:latest '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
+#  test-native:
+#    runs-on: ubuntu-latest
+#    env:
+#      MVN: mvn --show-version --batch-mode
+#    steps:
+#      - uses: graalvm/setup-graalvm@v1
+#        with:
+#          version: 22.1.0
+#          java-version: 17
+#          components: native-image
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: checkout
+#        uses: actions/checkout@v2
+#      - name: cache ~/.m2
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-m2
+#      - name: verify native image
+#        run: $MVN clean verify -Pnative
+#
+#  build-native:
+#    needs: test-native
+#    runs-on: ubuntu-latest
+#    env:
+#      MVN: mvn --show-version --batch-mode
+#    steps:
+#      - uses: graalvm/setup-graalvm@v1
+#        with:
+#          version: 22.1.0
+#          java-version: 17
+#          components: native-image
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: login ghcr.io
+#        uses: docker/login-action@v1.8.0
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+#          logout: true
+#      - name: checkout
+#        uses: actions/checkout@v2
+#      - name: cache ~/.m2
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-m2
+#      - name: package native image
+#        run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=ghcr.io/aorjoa/pun-api:latest '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
 
   gitop-version:
     needs: build-native
@@ -71,9 +71,12 @@ jobs:
         with:
           repository: aorjoa/pun-infra
           fetch-depth: 0
-      - name: git
+      - name: change image tag
         run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
           git --version
           git config user.name "pun-api bot"
           git config user.email "root@aorjoa.link"
+          sed -i -E "s/ghcr.io\/aorjoa\/pun-api.*$/ghcr.io\/aorjoa\/pun-api:$GITHUB_SHA/" apps/pun-api/deployment.yaml
+          git add apps/pun-api/deployment.yaml
+          git commit -m "🤖 change docker image version to $GITHUB_SHA"
+          git push

@@ -14,7 +14,7 @@ open class ReactiveGreetingResourceTest {
                 .`when`().get("/hello")
                 .then()
                 .statusCode(200)
-                .body(`is`("Hello @aorjoa"))
+                .body(`is`("Hello from @aorjoa"))
     }
 
 }

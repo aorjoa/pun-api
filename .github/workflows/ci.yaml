@@ -61,3 +61,19 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: package native image
         run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=ghcr.io/aorjoa/pun-api:latest '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
+
+  gitop-version:
+    needs: build-native
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          repository: aorjoa/pun-infra
+          fetch-depth: 0
+      - name: git
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git --version
+          git config user.name "pun-api bot"
+          git config user.email "root@aorjoa.link"

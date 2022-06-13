@@ -75,7 +75,7 @@ jobs:
       - name: change image tag
         run: |
           git --version
-          git config user.name "bhuridech"
+          git config user.name "aorjoa"
           git config user.email "root@aorjoa.link"
           sed -i -E "s/ghcr.io\/aorjoa\/pun-api.*$/ghcr.io\/aorjoa\/pun-api:$GITHUB_SHA/" apps/pun-api/deployment.yaml
           git add apps/pun-api/deployment.yaml
@@ -83,5 +83,6 @@ jobs:
       - name: push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT }}
+          repository: aorjoa/pun-infra
           branch: main

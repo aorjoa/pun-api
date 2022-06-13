@@ -10,60 +10,60 @@ permissions:
   packages: write
 
 jobs:
-#  test-native:
-#    runs-on: ubuntu-latest
-#    env:
-#      MVN: mvn --show-version --batch-mode
-#    steps:
-#      - uses: graalvm/setup-graalvm@v1
-#        with:
-#          version: 22.1.0
-#          java-version: 17
-#          components: native-image
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: checkout
-#        uses: actions/checkout@v2
-#      - name: cache ~/.m2
-#        uses: actions/cache@v2
-#        with:
-#          path: ~/.m2
-#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: ${{ runner.os }}-m2
-#      - name: verify native image
-#        run: $MVN clean verify -Pnative
-#
-#  build-native:
-#    needs: test-native
-#    runs-on: ubuntu-latest
-#    env:
-#      MVN: mvn --show-version --batch-mode
-#    steps:
-#      - uses: graalvm/setup-graalvm@v1
-#        with:
-#          version: 22.1.0
-#          java-version: 17
-#          components: native-image
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: login ghcr.io
-#        uses: docker/login-action@v1.8.0
-#        with:
-#          registry: ghcr.io
-#          username: ${{ github.actor }}
-#          password: ${{ secrets.GITHUB_TOKEN }}
-#          logout: true
-#      - name: checkout
-#        uses: actions/checkout@v2
-#      - name: cache ~/.m2
-#        uses: actions/cache@v2
-#        with:
-#          path: ~/.m2
-#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: ${{ runner.os }}-m2
-#      - name: package native image
-#        run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image=ghcr.io/aorjoa/pun-api:latest '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
+  test-native:
+    runs-on: ubuntu-latest
+    env:
+      MVN: mvn --show-version --batch-mode
+    steps:
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: 22.1.0
+          java-version: 17
+          components: native-image
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: cache ~/.m2
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: verify native image
+        run: $MVN clean verify -Pnative
+
+  build-native:
+    needs: test-native
+    runs-on: ubuntu-latest
+    env:
+      MVN: mvn --show-version --batch-mode
+    steps:
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: 22.1.0
+          java-version: 17
+          components: native-image
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: login ghcr.io
+        uses: docker/login-action@v1.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          logout: true
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: cache ~/.m2
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: package native image
+        run: $MVN package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.image="ghcr.io/aorjoa/pun-api:$GITHUB_SHA" '-Dquarkus.jib.labels."org.opencontainers.image.revision"='$GITHUB_SHA
 
   gitop-version:
-#    needs: build-native
+    needs: build-native
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -83,6 +83,6 @@ jobs:
       - name: push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.psu }}
           repository: aorjoa/pun-infra
           branch: main

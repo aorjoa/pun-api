@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build-native:
+    needs: test-native
     runs-on: ubuntu-latest
     env:
       MVN: mvn --show-version --batch-mode

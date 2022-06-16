@@ -13,7 +13,6 @@ class ArticleController @Inject constructor(val articleService: ArticleService?)
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     fun hello(): List<Article>? {
-        val ll = articleService?.list()
-        return ll
+       return articleService?.list()
     }
 }

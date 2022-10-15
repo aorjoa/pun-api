@@ -1,15 +1,10 @@
 package link.aorjoa.pun.article.dto.request
 
-import io.quarkus.mongodb.panache.PanacheMongoEntity
-import io.quarkus.mongodb.panache.common.MongoEntity
+import org.bson.types.ObjectId
 
-@MongoEntity
 data class Article(
+    var id: ObjectId? = null,
     var title: String,
     var content: String,
     var contributor: String
-) : PanacheMongoEntity() {
-    constructor() : this("","","") {
-
-    }
-}
+)

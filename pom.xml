@@ -159,7 +159,7 @@
         <property>
           <name>native</name>
         </property>
-      </activation>git restore --staged
+      </activation>
       <build>
         <plugins>
           <plugin>

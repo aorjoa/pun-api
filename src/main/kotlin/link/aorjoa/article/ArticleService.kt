@@ -10,4 +10,8 @@ class ArticleService @Inject constructor(val articleRepository: ArticleRepositor
     fun list(): List<Article>? {
         return articleRepository?.listAll()
     }
+
+    fun create(article: Article) {
+        articleRepository?.persist(article)
+    }
 }

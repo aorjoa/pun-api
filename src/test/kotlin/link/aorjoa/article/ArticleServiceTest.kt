@@ -18,10 +18,8 @@ class ArticleServiceTest {
     @InjectMock
     lateinit var articleRepository: ArticleRepository
     val articleList = listOf(
-        Article(ObjectId(Date(1641029552000)),
-            "id1", "idc1","ida1"),
-        Article(ObjectId(Date(1641115952000)),
-            "id2", "idc2","ida2")
+        Article("id1", "idc1", "ida1"),
+        Article("id2", "idc2", "ida2")
     )
 
     @BeforeEach
@@ -38,6 +36,6 @@ class ArticleServiceTest {
             .extract()
             .body()
             .`as`(Array<Article>::class.java).toList()
-            Assertions.assertEquals(resp, articleList)
+        Assertions.assertEquals(resp, articleList)
     }
 }
